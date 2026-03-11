@@ -214,6 +214,10 @@ function buildEmailHtml(event) {
     return buildSequenceEmailHtml(event);
   }
 
+  if (event.alertType === "office-summary") {
+    return buildOfficeSummaryEmailHtml(event);
+  }
+
   const { slot, watcher } = event;
   return [
     `<p>New NC DMV appointment found for watcher <strong>${watcher.id}</strong>.</p>`,
@@ -240,6 +244,10 @@ function buildPlainTextEmail(event) {
     return buildSequencePlainTextEmail(event);
   }
 
+  if (event.alertType === "office-summary") {
+    return buildOfficeSummaryPlainTextEmail(event);
+  }
+
   const { slot, watcher } = event;
   return [
     `New NC DMV appointment found for watcher ${watcher.id}.`,
@@ -259,6 +267,11 @@ function buildEmailSubject(event) {
 
   if (event.alertType === "consecutive-sequence" && event.sequence) {
     return `NC DMV: ${event.sequence.slotCount} consecutive openings at ${event.sequence.officeName}`;
+  }
+
+  if (event.alertType === "office-summary") {
+    const totalSlots = event.sequences.reduce((sum, seq) => sum + seq.slotCount, 0);
+    return `NC DMV: ${totalSlots} openings found at ${event.officeName}`;
   }
 
   return `New NC DMV appointment: ${event.slot.officeName} at ${event.slot.localStart}`;
@@ -295,5 +308,60 @@ function buildSequencePlainTextEmail(event) {
     `Rule: ${rule?.gapMinutes ?? 15} minute gaps within ${rule?.radiusMiles ?? 25} miles`,
     ...sequence.slots.map((slot) => `Time: ${slot.localStart}${slot.distanceMiles != null ? ` (${slot.distanceMiles.toFixed(1)} miles)` : ""}`),
     `Booking URL: ${sequence.bookingUrl}`
+  ].join("\n");
+}
+
+function buildOfficeSummaryEmailHtml(event) {
+  const { sequences, officeName, watcher } = event;
+  const officeAddress = sequences[0]?.officeAddress || "Unknown";
+  const bookingUrl = sequences[0]?.bookingUrl || "";
+
+  const sequenceHtml = sequences
+    .map((seq) => {
+      const slotsHtml = seq.slots
+        .map((slot) => `<li>${slot.localStart}</li>`)
+        .join("");
+      return `
+      <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #eee; border-radius: 4px;">
+        <strong>Sequence of ${seq.slotCount} slots:</strong>
+        <ul style="margin: 5px 0;">${slotsHtml}</ul>
+      </div>`;
+    })
+    .join("");
+
+  return [
+    `<p>New NC DMV openings found at <strong>${officeName}</strong> for watcher <strong>${watcher.id}</strong>.</p>`,
+    "<div style='margin-bottom: 20px;'>",
+    `<strong>Office:</strong> ${officeName}<br>`,
+    `<strong>Address:</strong> ${officeAddress}<br>`,
+    `<strong>Booking URL:</strong> <a href="${bookingUrl}">${bookingUrl}</a>`,
+    "</div>",
+    "<h3>Available Times:</h3>",
+    sequenceHtml
+  ].join("");
+}
+
+function buildOfficeSummaryPlainTextEmail(event) {
+  const { sequences, officeName, watcher } = event;
+  const officeAddress = sequences[0]?.officeAddress || "Unknown";
+  const bookingUrl = sequences[0]?.bookingUrl || "";
+
+  const sequenceText = sequences
+    .map((seq) => {
+      const times = seq.slots.map((slot) => `  - ${slot.localStart}`).join("\n");
+      return `Sequence of ${seq.slotCount} slots:\n${times}`;
+    })
+    .join("\n\n");
+
+  return [
+    `New NC DMV openings found at ${officeName} for watcher ${watcher.id}.`,
+    "",
+    `Office: ${officeName}`,
+    `Address: ${officeAddress}`,
+    `Booking URL: ${bookingUrl}`,
+    "",
+    "Available Times:",
+    "",
+    sequenceText
   ].join("\n");
 }

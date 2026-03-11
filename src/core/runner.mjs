@@ -93,27 +93,38 @@ export class MonitorRunner {
           }
         }
 
-        if (emailNotifiers.length > 0) {
-          for (const sequence of freshEmailSequences) {
+        if (emailNotifiers.length > 0 && freshEmailSequences.length > 0) {
+          const freshByOffice = new Map();
+          for (const seq of freshEmailSequences) {
+            const list = freshByOffice.get(seq.officeName) ?? [];
+            list.push(seq);
+            freshByOffice.set(seq.officeName, list);
+          }
+
+          for (const [officeName, sequences] of freshByOffice.entries()) {
             const event = {
-              alertType: "consecutive-sequence",
+              alertType: "office-summary",
               watcher,
               email: watcher.email || DEFAULT_ALERT_EMAIL,
-              sequence,
-              slots: sequence.slots,
+              officeName,
+              sequences,
               debug,
               rule: emailPolicy
             };
+
             const outcomes = await Promise.allSettled(emailNotifiers.map((notifier) => notifier.send(event)));
             const failures = outcomes.filter((outcome) => outcome.status === "rejected");
+            
             if (failures.length === 0) {
-              this.store.markEmailAlert(watcher.id, sequence.id, {
-                officeName: sequence.officeName,
-                startAt: sequence.startAt,
-                slotIds: sequence.slotIds,
-                slotCount: sequence.slotCount
-              });
-              nextEmailAlerts[sequence.id] = this.store.getWatcherEmailAlerts(watcher.id)[sequence.id];
+              for (const sequence of sequences) {
+                this.store.markEmailAlert(watcher.id, sequence.id, {
+                  officeName: sequence.officeName,
+                  startAt: sequence.startAt,
+                  slotIds: sequence.slotIds,
+                  slotCount: sequence.slotCount
+                });
+                nextEmailAlerts[sequence.id] = this.store.getWatcherEmailAlerts(watcher.id)[sequence.id];
+              }
             }
           }
         }

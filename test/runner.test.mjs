@@ -198,9 +198,10 @@ test("MonitorRunner sends email only for consecutive 15-minute slots within 25 m
   assert.equal(run1.results[0].freshEmailAlerts, 1);
   assert.equal(slotEvents.length, 4);
   assert.equal(emailEvents.length, 1);
-  assert.equal(emailEvents[0].alertType, "consecutive-sequence");
-  assert.equal(emailEvents[0].sequence.officeName, "Cary");
-  assert.equal(emailEvents[0].sequence.slotCount, 2);
+  assert.equal(emailEvents[0].alertType, "office-summary");
+  assert.equal(emailEvents[0].officeName, "Cary");
+  assert.equal(emailEvents[0].sequences.length, 1);
+  assert.equal(emailEvents[0].sequences[0].slotCount, 2);
 
   const run2 = await runner.runOnce();
   assert.equal(run2.results[0].freshEmailAlerts, 0);
