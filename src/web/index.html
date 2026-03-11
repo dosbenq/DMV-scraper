@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NC DMV Monitor</title>
+    <!-- Add Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <span class="eyebrow">North Carolina DMV Appointments</span>
+          <h1>Find an opening.</h1>
+          <p class="lede">
+            Enter your service and location to find the nearest, soonest slots. Beautifully organized for quick booking.
+          </p>
+        </div>
+
+        <aside class="status-card">
+          <div class="status-row">
+            <span>Background poller</span>
+            <strong id="background-status">Not installed</strong>
+          </div>
+          <div class="status-row">
+            <span>Browser alerts</span>
+            <strong id="browser-alert-status">Not enabled</strong>
+          </div>
+          <div class="status-row">
+            <span>Run status</span>
+            <strong id="run-status">Idle</strong>
+          </div>
+          <div class="status-row">
+            <span>Polling</span>
+            <strong id="poll-status">Stopped</strong>
+          </div>
+          <div class="status-row">
+            <span>Last run</span>
+            <strong id="last-run">Never</strong>
+          </div>
+        </aside>
+      </header>
+
+      <section class="overview-grid" aria-label="Search overview">
+        <article class="overview-card">
+          <span class="overview-label">Service</span>
+          <span id="summary-service" class="overview-value">Not selected</span>
+        </article>
+        <article class="overview-card">
+          <span class="overview-label">Search Area</span>
+          <span id="summary-area" class="overview-value">No distance set</span>
+        </article>
+        <article class="overview-card">
+          <span class="overview-label">Schedule</span>
+          <span id="summary-window" class="overview-value">Any date, any time</span>
+        </article>
+        <article class="overview-card overview-card-emphasis">
+          <span class="overview-label">Live Availability</span>
+          <span id="summary-alerts" class="overview-value">No runs yet</span>
+        </article>
+      </section>
+
+      <main class="layout">
+        <section class="panel panel-form">
+          <div class="panel-top">
+            <div>
+              <span class="eyebrow panel-eyebrow">Appointment Search</span>
+              <h2>Search Settings</h2>
+              <p id="search-preview" class="lede" style="font-size: 0.95rem; margin-top: 0.5rem;">
+                Pick a DMV service and location to start searching.
+              </p>
+            </div>
+
+            <div class="button-row">
+              <button id="save-config" class="button button-secondary">Save Settings</button>
+              <button id="run-once" class="button">Check Now</button>
+              <button id="toggle-polling" class="button button-accent">Start Session Polling</button>
+              <button id="toggle-background" class="button button-secondary">Enable Background Poller</button>
+              <button id="reset-seen" class="button button-secondary">Reset Seen State</button>
+            </div>
+          </div>
+
+          <p id="form-message" class="form-message" hidden></p>
+
+          <form id="config-form" class="settings-stack">
+            <section class="settings-section">
+              <div class="section-head">
+                <div>
+                  <h3>Basics</h3>
+                  <p>Pick the exact DMV service and your auto-refresh preference.</p>
+                </div>
+              </div>
+
+              <div class="section-grid">
+                <!-- Monitor Name hidden visually to simplify UI -->
+                <input id="watcherId" name="watcherId" type="hidden" value="default-search" />
+
+                <div class="field">
+                  <label for="pollIntervalMs">Auto-refresh (ms)</label>
+                  <input id="pollIntervalMs" name="pollIntervalMs" type="number" min="1000" step="1000" />
+                  <span class="help">Example: 180000 tests every 3 minutes.</span>
+                </div>
+
+                <div class="field field-span-2">
+                  <label for="serviceName">DMV Service</label>
+                  <select id="serviceName" name="serviceName"></select>
+                  <span class="help">Use the exact appointment type to avoid matching the wrong DMV flow.</span>
+                </div>
+
+                <div class="field field-toggle">
+                  <label for="watcherActive">Monitor Active</label>
+                  <input id="watcherActive" name="watcherActive" type="checkbox" />
+                </div>
+
+                <div class="field">
+                  <label for="watcherEmail">Alert Email</label>
+                  <input id="watcherEmail" name="watcherEmail" type="email" readonly />
+                  <span class="help">Hardcoded to aditya.aggarwal5598@gmail.com for new-opening alerts.</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="settings-section">
+              <div class="section-head">
+                <div>
+                  <h3>Location</h3>
+                  <p>Use your coordinates for the DMV site's nearby-office behavior.</p>
+                </div>
+                <button id="use-location" class="button button-secondary" type="button">Use My Location</button>
+              </div>
+
+              <div class="section-grid">
+                <div class="field">
+                  <label for="radiusMiles">Max Distance (miles)</label>
+                  <input id="radiusMiles" name="radiusMiles" type="number" min="1" step="1" placeholder="e.g. 50" />
+                </div>
+
+                <div class="field">
+                  <label for="anchorZip">ZIP Fallback</label>
+                  <input id="anchorZip" name="anchorZip" type="text" inputmode="numeric" />
+                </div>
+
+                <div class="field" style="display: none;">
+                  <label for="latitude">Latitude</label>
+                  <input id="latitude" name="latitude" type="number" step="0.000001" />
+                </div>
+
+                <div class="field" style="display: none;">
+                  <label for="longitude">Longitude</label>
+                  <input id="longitude" name="longitude" type="number" step="0.000001" />
+                </div>
+
+                <div class="field field-span-2">
+                  <label for="officeExclude">Excluded Offices</label>
+                  <input id="officeExclude" name="officeExclude" type="text" placeholder="Charlotte" />
+                  <span class="help">Optional. Comma-separated office names to suppress.</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="settings-section">
+              <div class="section-head">
+                <div>
+                  <h3>Timing</h3>
+                  <p>Limit the dates, weekdays, and time window for your appointment.</p>
+                </div>
+              </div>
+
+              <div class="section-grid">
+                <div class="field">
+                  <label for="dateFrom">From Date</label>
+                  <input id="dateFrom" name="dateFrom" type="date" />
+                </div>
+
+                <div class="field">
+                  <label for="dateTo">To Date</label>
+                  <input id="dateTo" name="dateTo" type="date" />
+                </div>
+
+                <div class="field">
+                  <label for="timeStart">Earliest Time</label>
+                  <input id="timeStart" name="timeStart" type="time" />
+                </div>
+
+                <div class="field">
+                  <label for="timeEnd">Latest Time</label>
+                  <input id="timeEnd" name="timeEnd" type="time" />
+                </div>
+
+                <div class="field field-span-2">
+                  <span style="font-weight: 500; font-size: 0.95rem; margin-bottom: 0.5rem; display: block;">Weekdays</span>
+                  <div class="weekday-grid" id="weekday-grid"></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="settings-section">
+              <div class="section-head">
+                <div>
+                  <h3>Notifications</h3>
+                  <p>System notification is on by default. Mail app email is local to this Mac.</p>
+                </div>
+              </div>
+
+              <div class="section-grid">
+                <div class="field field-toggle">
+                  <label for="appleMailEnabled">Email via Mail app</label>
+                  <input id="appleMailEnabled" name="appleMailEnabled" type="checkbox" />
+                </div>
+
+                <div class="field field-span-2">
+                  <span class="help">Uses Apple Mail on this Mac to send alerts to aditya.aggarwal5598@gmail.com.</span>
+                </div>
+
+                <div class="field field-toggle">
+                  <label for="resendEnabled">Email via Resend</label>
+                  <input id="resendEnabled" name="resendEnabled" type="checkbox" />
+                </div>
+
+                <div class="field">
+                  <label for="resendFrom">From Email</label>
+                  <input id="resendFrom" name="resendFrom" type="email" />
+                </div>
+
+                <div class="field field-toggle">
+                  <label for="webhookEnabled">Webhook</label>
+                  <input id="webhookEnabled" name="webhookEnabled" type="checkbox" />
+                </div>
+
+                <div class="field field-span-2">
+                  <button id="test-email" class="button button-secondary" type="button">Send Test Email</button>
+                  <span class="help">Sends a test email through the currently enabled email notifier.</span>
+                </div>
+
+                <div class="field field-span-2">
+                  <button id="enable-browser-alerts" class="button button-secondary" type="button">Enable Browser Alerts</button>
+                  <span class="help">Keep this tab open to receive browser notifications.</span>
+                </div>
+              </div>
+            </section>
+          </form>
+        </section>
+
+        <section class="panel panel-results">
+          <div class="panel-top">
+            <div>
+              <span class="eyebrow panel-eyebrow">Availability</span>
+              <h2>Open Slots</h2>
+              <p class="lede" style="font-size: 0.95rem; margin-top: 0.5rem;">Sort, search, and skim the appointment list without leaving the page.</p>
+            </div>
+            <span id="result-summary" class="pill">No runs yet</span>
+          </div>
+
+          <div class="results-toolbar">
+            <div class="toolbar-meta">
+              <strong id="toolbar-slot-count">0 slots shown</strong>
+              <span id="toolbar-filter-summary">Soonest first</span>
+            </div>
+
+            <div class="toolbar-controls">
+              <div class="toolbar-field">
+                <span>Sort</span>
+                <select id="slot-sort">
+                  <option value="nearest">Nearest first</option>
+                  <option value="soonest">Soonest first</option>
+                  <option value="office">Office A-Z</option>
+                </select>
+              </div>
+
+              <div class="toolbar-field toolbar-search">
+                <span>Search offices</span>
+                <input id="slot-search" type="search" placeholder="Mocksville, Raleigh, Ahoskie" />
+              </div>
+
+              <label class="toggle-pill">
+                <input id="new-only" type="checkbox" />
+                <span>New only</span>
+              </label>
+
+              <label class="toggle-pill">
+                <input id="show-diagnostics" type="checkbox" />
+                <span>Diagnostics</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="results" class="results-list"></div>
+        </section>
+      </main>
+    </div>
+
+    <template id="result-template">
+      <article class="result-card">
+        <div class="result-head">
+          <div>
+            <h3></h3>
+            <span class="meta"></span>
+          </div>
+          <span class="pill"></span>
+        </div>
+        <div class="result-body">
+          <div class="result-banner" hidden></div>
+          <div class="summary-grid"></div>
+          <div class="section-stack"></div>
+        </div>
+      </article>
+    </template>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

@@ -1,0 +1,66 @@
+{
+  "pollIntervalMs": 180000,
+  "provider": {
+    "type": "nc-dmv",
+    "baseUrl": "https://skiptheline.ncdot.gov",
+    "journeyPath": "/Webapp/Appointment/Index/a7ade79b-996d-4971-8766-97feb75254de"
+  },
+  "alertPolicies": {
+    "emailConsecutiveSlots": {
+      "enabled": true,
+      "radiusMiles": 25,
+      "gapMinutes": 15,
+      "minConsecutiveSlots": 2
+    }
+  },
+  "notifiers": {
+    "console": {
+      "enabled": true
+    },
+    "appleMail": {
+      "enabled": false
+    },
+    "resend": {
+      "enabled": false,
+      "apiKeyEnv": "RESEND_API_KEY",
+      "from": "alerts@example.com"
+    },
+    "webhook": {
+      "enabled": false,
+      "urlEnv": "APPOINTMENT_WEBHOOK_URL"
+    }
+  },
+  "watchers": [
+    {
+      "id": "triangle-morning",
+      "active": true,
+      "email": "you@example.com",
+      "serviceName": "Driver License Renewal",
+      "serviceKeywords": [
+        "renewal"
+      ],
+      "officePreferences": {
+        "exclude": [],
+        "radiusMiles": 20,
+        "anchorZip": "27601",
+        "latitude": 35.7796,
+        "longitude": -78.6382
+      },
+      "datePreferences": {
+        "from": "2026-03-10",
+        "to": "2026-04-10",
+        "daysOfWeek": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "timePreferences": {
+        "start": "08:00",
+        "end": "12:00"
+      }
+    }
+  ]
+}
