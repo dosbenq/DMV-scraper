@@ -1,33 +1,33 @@
 :root {
-  /* Core Colors - Vibrant Dark Theme */
-  --bg-base: #0a0a0f;
-  --bg-surface: #14141f;
-  --bg-elevated: #1e1e2d;
-  --text-primary: #ededf6;
-  --text-secondary: #9aa0af;
-  --text-tertiary: #6b7280;
+  /* Core Colors - Modern Soft Light Theme */
+  --bg-base: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #64748b;
   
-  /* Accents */
-  --accent-primary: #3b82f6; /* Blue */
-  --accent-primary-hover: #60a5fa;
-  --accent-secondary: #8b5cf6; /* Purple */
-  --accent-tertiary: #ec4899; /* Pink */
+  /* Accents - Soft but distinct */
+  --accent-primary: #2563eb; /* Royal Blue */
+  --accent-primary-hover: #1d4ed8;
+  --accent-secondary: #7c3aed; /* Violet */
+  --accent-tertiary: #db2777; /* Rose */
   
   /* Status Colors */
-  --success: #10b981;
-  --success-bg: rgba(16, 185, 129, 0.1);
-  --warning: #f59e0b;
-  --warning-bg: rgba(245, 158, 11, 0.1);
-  --error: #ef4444;
-  --error-bg: rgba(239, 68, 68, 0.1);
+  --success: #059669;
+  --success-bg: rgba(5, 150, 105, 0.1);
+  --warning: #d97706;
+  --warning-bg: rgba(217, 119, 6, 0.1);
+  --error: #dc2626;
+  --error-bg: rgba(220, 38, 38, 0.1);
   
   /* Borders & Shadows */
-  --border: rgba(255, 255, 255, 0.08);
-  --border-focus: rgba(59, 130, 246, 0.5);
-  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
-  --shadow-neon: 0 0 15px rgba(59, 130, 246, 0.3);
+  --border: rgba(15, 23, 42, 0.1);
+  --border-focus: rgba(37, 99, 235, 0.4);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 15px 25px -5px rgba(0, 0, 0, 0.05);
+  --shadow-neon: 0 0 15px rgba(37, 99, 235, 0.15);
   
   /* Geometry */
   --radius-sm: 8px;
@@ -47,9 +47,9 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg-base);
   background-image: 
-    radial-gradient(circle at 15% 10%, rgba(59, 130, 246, 0.1) 0%, transparent 40%),
-    radial-gradient(circle at 85% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 40%),
-    radial-gradient(circle at 50% 80%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
+    radial-gradient(circle at 15% 10%, rgba(37, 99, 235, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(124, 58, 237, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(219, 39, 119, 0.03) 0%, transparent 50%);
   background-attachment: fixed;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -62,11 +62,11 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
   letter-spacing: -0.02em;
 }
-
 h1 {
   font-size: clamp(2rem, 5vw, 3.5rem);
-  background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+  background: linear-gradient(135deg, #020617 0%, #3b82f6 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 0.5rem;
 }
@@ -135,14 +135,13 @@ p, label, span, div {
   position: relative;
   overflow: hidden;
 }
-
 .panel::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
-  opacity: 0.3;
+  opacity: 0.8;
 }
 
 .panel:hover {
@@ -169,19 +168,15 @@ p, label, span, div {
   border-bottom: 1px dashed var(--border);
 }
 
-.status-row:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
 .status-row span {
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
+  font-weight: 500;
 }
 
 .status-row strong {
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
-  background: rgba(255,255,255,0.05);
+  background: rgba(15, 23, 42, 0.05);
   padding: 4px 8px;
   border-radius: var(--radius-sm);
 }
@@ -222,7 +217,7 @@ p, label, span, div {
   content: '';
   position: absolute;
   top: -50%; left: -50%; right: -50%; bottom: -50%;
-  background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0.05), rgba(255,255,255,0));
+  background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0.5), rgba(255,255,255,0));
   transform: rotate(45deg);
   animation: shine 4s infinite linear;
 }
@@ -284,11 +279,12 @@ p, label, span, div {
   background: transparent;
   border: 1px solid var(--border);
   color: var(--text-primary);
+  box-shadow: none;
 }
 
 .button-secondary:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--bg-elevated);
+  border-color: rgba(15, 23, 42, 0.2);
   box-shadow: none;
 }
 
@@ -314,6 +310,35 @@ p, label, span, div {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+  background: var(--bg-base);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border);
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.summary-value {
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 .section-head {
@@ -450,7 +475,7 @@ input[type="checkbox"]:checked::after {
 
 /* Results Toolbar */
 .results-toolbar {
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 1rem;
@@ -514,7 +539,8 @@ input[type="checkbox"]:checked::after {
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   color: var(--text-primary);
 }
 
@@ -574,22 +600,21 @@ input[type="checkbox"]:checked::after {
 
 /* Offices */
 .office-card {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--bg-base);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 1.25rem;
   margin-top: 1rem;
 }
 
-.office-head {
+.office-badges {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .slot-tag {
-  background: rgba(255,255,255,0.05);
+  background: var(--bg-elevated);
   border: 1px solid var(--border);
   padding: 0.25rem 0.75rem;
   border-radius: var(--radius-xl);
@@ -605,7 +630,7 @@ input[type="checkbox"]:checked::after {
 .date-group {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px dashed rgba(255,255,255,0.05);
+  border-top: 1px dashed var(--border);
 }
 
 .time-chip-list {
@@ -648,15 +673,15 @@ input[type="checkbox"]:checked::after {
 }
 
 .form-message[data-tone="info"] {
-  background: rgba(59, 130, 246, 0.1);
+  background: rgba(37, 99, 235, 0.05);
   color: var(--accent-primary-hover);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(37, 99, 235, 0.2);
 }
 
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--bg-elevated);
   border: 1px dashed var(--border);
   border-radius: var(--radius-lg);
   color: var(--text-secondary);

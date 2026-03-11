@@ -513,7 +513,7 @@ function buildSummaryItem(label, value) {
 
   const labelEl = document.createElement("span");
   labelEl.className = "summary-label";
-  labelEl.textContent = label;
+  labelEl.textContent = label + " ";
 
   const valueEl = document.createElement("span");
   valueEl.className = "summary-value";
