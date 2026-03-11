@@ -177,6 +177,16 @@ function startPolling(state) {
     if (!state.polling.active || state.isRunning) {
       return;
     }
+    
+    // Refresh background status to see if the system daemon is already handling this
+    const bgStatus = await getBackgroundPollerStatus({ repoDir: state.repoDir, configPath: state.configPath });
+    state.background = bgStatus;
+    
+    if (bgStatus.running) {
+       console.log("Background service is already running. Skipping duplicate UI poll process.");
+       return;
+    }
+
     await executeRun(state);
   };
 

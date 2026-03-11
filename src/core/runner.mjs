@@ -228,7 +228,7 @@ function buildSequence(slots) {
   const first = slots[0];
   const last = slots[slots.length - 1];
   return {
-    id: `${first.serviceName}::${first.officeName}::${slots.map((slot) => slot.id).join("::")}`,
+    id: `email-seq::${first.serviceName}::${first.officeName}::${first.id}`,
     officeName: first.officeName,
     officeAddress: first.officeAddress,
     serviceName: first.serviceName,

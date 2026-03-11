@@ -377,7 +377,8 @@ export class NcDmvProvider {
         });
 
         for (const option of extractTimeOptions(timeHtml)) {
-          const slot = buildSlot(office, service, option, officeSession.currentUrl);
+          const bookingLink = "https://skiptheline.ncdot.gov/Webapp/Appointment/Index/a7ceb24a-7bc5-40b5-a8fa-c3dc92a2a466";
+          const slot = buildSlot(office, service, option, bookingLink);
           if (slot) {
             slots.push(slot);
           }
