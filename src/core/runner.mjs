@@ -93,39 +93,53 @@ export class MonitorRunner {
           }
         }
 
-        if (emailNotifiers.length > 0 && freshEmailSequences.length > 0) {
-          const freshByOffice = new Map();
-          for (const seq of freshEmailSequences) {
-            const list = freshByOffice.get(seq.officeName) ?? [];
-            list.push(seq);
-            freshByOffice.set(seq.officeName, list);
-          }
-
-          for (const [officeName, sequences] of freshByOffice.entries()) {
+        if (freshEmailSequences.length > 0) {
+          // Notify non-email channels about each fresh sequence
+          for (const sequence of freshEmailSequences) {
             const event = {
-              alertType: "office-summary",
+              alertType: "consecutive-sequence",
               watcher,
               email: watcher.email || DEFAULT_ALERT_EMAIL,
-              officeName,
-              sequences,
+              sequence,
               debug,
               rule: emailPolicy
             };
+            await Promise.allSettled(slotNotifiers.map((notifier) => notifier.send(event)));
+          }
 
-            const outcomes = await Promise.allSettled(emailNotifiers.map((notifier) => notifier.send(event)));
-            const failures = outcomes.filter((outcome) => outcome.status === "rejected");
-            
-            if (failures.length === 0) {
-              for (const sequence of sequences) {
-                this.store.markEmailAlert(watcher.id, sequence.id, {
-                  officeName: sequence.officeName,
-                  startAt: sequence.startAt,
-                  slotIds: sequence.slotIds,
-                  slotCount: sequence.slotCount
-                });
-                nextEmailAlerts[sequence.id] = this.store.getWatcherEmailAlerts(watcher.id)[sequence.id];
-              }
+          // Notify email channels with a summary per office
+          if (emailNotifiers.length > 0) {
+            const freshByOffice = new Map();
+            for (const seq of freshEmailSequences) {
+              const list = freshByOffice.get(seq.officeName) ?? [];
+              list.push(seq);
+              freshByOffice.set(seq.officeName, list);
             }
+
+            for (const [officeName, sequences] of freshByOffice.entries()) {
+              const event = {
+                alertType: "office-summary",
+                watcher,
+                email: watcher.email || DEFAULT_ALERT_EMAIL,
+                officeName,
+                sequences,
+                debug,
+                rule: emailPolicy
+              };
+
+              await Promise.allSettled(emailNotifiers.map((notifier) => notifier.send(event)));
+            }
+          }
+
+          // Mark all sequences as notified
+          for (const sequence of freshEmailSequences) {
+            this.store.markEmailAlert(watcher.id, sequence.id, {
+              officeName: sequence.officeName,
+              startAt: sequence.startAt,
+              slotIds: sequence.slotIds,
+              slotCount: sequence.slotCount
+            });
+            nextEmailAlerts[sequence.id] = this.store.getWatcherEmailAlerts(watcher.id)[sequence.id];
           }
         }
 
@@ -189,7 +203,9 @@ function buildEmailPolicyWatcher(watcher, policy) {
 
 function buildConsecutiveEmailSequences(slots, policy) {
   const groups = new Map();
-  const gapMinutes = Number(policy?.gapMinutes ?? 15);
+  const gaps = Array.isArray(policy?.gapMinutes)
+    ? policy.gapMinutes.map(Number)
+    : [Number(policy?.gapMinutes ?? 15)];
   const minConsecutiveSlots = Number(policy?.minConsecutiveSlots ?? 2);
 
   for (const slot of slots) {
@@ -216,7 +232,8 @@ function buildConsecutiveEmailSequences(slots, policy) {
       }
 
       const previous = current[current.length - 1];
-      if (minutesBetween(previous.startAt, slot.startAt) === gapMinutes) {
+      const gap = minutesBetween(previous.startAt, slot.startAt);
+      if (gaps.includes(gap)) {
         current.push(slot);
         continue;
       }

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NC DMV Monitor</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo-area">
+                <div class="logo-icon"></div>
+                <h1>NC <span class="accent">DMV</span> Monitor</h1>
+            </div>
+            <div class="status-badge" id="monitor-status">Idle</div>
+        </header>
+
+        <main>
+            <section class="quick-stats">
+              <div class="stat-card">
+                <span class="stat-label">Last Run</span>
+                <span class="stat-value" id="last-run-time">Never</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-label">Slots Found</span>
+                <span class="stat-value" id="slots-found-count">0</span>
+              </div>
+            </section>
+
+            <section class="config-tabs">
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="location">Location</button>
+                    <button class="tab-btn" data-tab="preferences">Dates</button>
+                    <button class="tab-btn" data-tab="group">Group</button>
+                </div>
+
+                <div class="tab-content active" id="tab-location">
+                    <div class="input-group">
+                        <label for="zip-code">Zip Code</label>
+                        <input type="text" id="zip-code" placeholder="e.g. 27705" maxlength="5">
+                    </div>
+                    <div class="input-group">
+                        <label for="radius">Radius (miles)</label>
+                        <input type="number" id="radius" value="50" min="5" max="200">
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-preferences">
+                    <div class="row">
+                        <div class="input-group">
+                            <label for="date-from">From</label>
+                            <input type="date" id="date-from">
+                        </div>
+                        <div class="input-group">
+                            <label for="date-to">To</label>
+                            <input type="date" id="date-to">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Days of Week</label>
+                        <div class="days-chips" id="days-picker">
+                            <button class="chip active" data-day="1">M</button>
+                            <button class="chip active" data-day="2">T</button>
+                            <button class="chip active" data-day="3">W</button>
+                            <button class="chip active" data-day="4">T</button>
+                            <button class="chip active" data-day="5">F</button>
+                            <button class="chip" data-day="6">S</button>
+                            <button class="chip" data-day="7">S</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-group">
+                    <div class="toggle-group">
+                        <label for="group-enabled">Enable Group Booking</label>
+                        <input type="checkbox" id="group-enabled" checked>
+                    </div>
+                    <div class="input-group">
+                        <label for="group-gaps">Time Gaps (mins, comma sep)</label>
+                        <input type="text" id="group-gaps" value="30, 45" placeholder="e.g. 30, 45">
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <button id="toggle-monitor" class="primary-btn">Start Monitoring</button>
+            <div class="footer-note">Polls every 10 minutes in background.</div>
+        </footer>
+    </div>
+    <script type="module" src="popup.js"></script>
+</body>
+</html>

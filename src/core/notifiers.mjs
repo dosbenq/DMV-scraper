@@ -289,7 +289,7 @@ function buildSequenceEmailHtml(event) {
     `<li>Office: ${sequence.officeName}</li>`,
     `<li>Address: ${sequence.officeAddress || "Unknown"}</li>`,
     `<li>Count: ${sequence.slotCount} consecutive slots</li>`,
-    `<li>Rule: ${rule?.gapMinutes ?? 15} minute gaps within ${rule?.radiusMiles ?? 25} miles</li>`,
+    `<li>Rule: ${Array.isArray(rule?.gapMinutes) ? rule.gapMinutes.join("/") : (rule?.gapMinutes ?? 15)} minute gaps within ${rule?.radiusMiles ?? 25} miles</li>`,
     `<li>Booking URL: <a href="${sequence.bookingUrl}">${sequence.bookingUrl}</a></li>`,
     "</ul>",
     "<p>Times:</p>",
@@ -305,7 +305,7 @@ function buildSequencePlainTextEmail(event) {
     `Office: ${sequence.officeName}`,
     `Address: ${sequence.officeAddress || "Unknown"}`,
     `Count: ${sequence.slotCount} consecutive slots`,
-    `Rule: ${rule?.gapMinutes ?? 15} minute gaps within ${rule?.radiusMiles ?? 25} miles`,
+    `Rule: ${Array.isArray(rule?.gapMinutes) ? rule.gapMinutes.join("/") : (rule?.gapMinutes ?? 15)} minute gaps within ${rule?.radiusMiles ?? 25} miles`,
     ...sequence.slots.map((slot) => `Time: ${slot.localStart}${slot.distanceMiles != null ? ` (${slot.distanceMiles.toFixed(1)} miles)` : ""}`),
     `Booking URL: ${sequence.bookingUrl}`
   ].join("\n");
