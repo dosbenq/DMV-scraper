@@ -57,11 +57,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Geolocation Support
     document.getElementById('use-location').addEventListener('click', () => {
         const display = document.getElementById('location-display');
-        display.textContent = "Getting location...";
+        display.textContent = "📍 Requesting GPS...";
         
         navigator.geolocation.getCurrentPosition(async (pos) => {
             const { latitude, longitude } = pos.coords;
-            display.textContent = `Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`;
+            display.textContent = `✅ GPS: ${latitude.toFixed(3)}, ${longitude.toFixed(3)}`;
             
             const { watcher } = await chrome.storage.local.get('watcher');
             const updatedWatcher = {
@@ -70,13 +70,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     ...watcher?.officePreferences,
                     latitude,
                     longitude,
-                    anchorZip: '' // Clear zip if using GPS
+                    anchorZip: '' 
                 }
             };
             document.getElementById('zip-code').value = '';
             await chrome.storage.local.set({ watcher: updatedWatcher });
+            saveSettings(); // Ensure change is persisted and runner updated
         }, (err) => {
-            display.textContent = "Error getting location.";
+            display.textContent = "❌ GPS access denied or error.";
             console.error(err);
         });
     });
@@ -87,7 +88,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Auto-save on input change
     ['zip-code', 'radius', 'date-from', 'date-to', 'group-enabled', 'group-gaps', 'poll-interval'].forEach(id => {
-        document.getElementById(id).addEventListener('change', saveSettings);
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('change', saveSettings);
     });
 
     async function saveSettings() {
@@ -111,7 +113,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 anchorZip: zip, 
                 radiusMiles: radius 
             },
-            datePreferences: { from, to, daysOfWeek: [1,2,3,4,5,6,7] }, // Defaulting to all days for simplicity in manual entry
+            datePreferences: { from, to, daysOfWeek: [1,2,3,4,5,6,7] },
             timePreferences: { start: "08:00", end: "17:00" }
         };
 
@@ -124,7 +126,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         await chrome.storage.local.set({ watcher, policy, pollInterval });
         
-        // Notify background to update alarm if running
         const { isMonitoring } = await chrome.storage.local.get('isMonitoring');
         if (isMonitoring) {
             chrome.runtime.sendMessage({ action: 'start' });
@@ -150,11 +151,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function updateStats() {
         const stats = await chrome.storage.local.get(['lastRunAt', 'notifiedSlots', 'notifiedSequences', 'latestRunResults']);
         if (stats.lastRunAt) {
-            document.getElementById('last-run-time').textContent = new Date(stats.lastRunAt).toLocaleTimeString();
+            document.getElementById('last-run-time').textContent = new Date(stats.lastRunAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
         const slotsCount = Object.keys(stats.notifiedSlots || {}).length;
         const seqCount = Object.keys(stats.notifiedSequences || {}).length;
-        document.getElementById('slots-found-count').textContent = `${slotsCount} (${seqCount} sets)`;
+        document.getElementById('slots-found-count').textContent = `${slotsCount} found`;
         
         if (stats.latestRunResults) {
             renderResults(stats.latestRunResults.slots || []);
@@ -164,9 +165,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     function renderResults(slots) {
         const list = document.getElementById('results-list');
         if (!slots || slots.length === 0) {
-            list.innerHTML = '<div class="empty-state">No slots found yet.</div>';
+            list.innerHTML = '<div class="empty-state">No slots matching your current filters.</div>';
             return;
         }
+
+        const mainBookingUrl = "https://skiptheline.ncdot.gov/Webapp/Appointment/Index/a7ade79b-996d-4971-8766-97feb75254de";
 
         list.innerHTML = slots.map(slot => `
             <div class="result-item">
@@ -174,7 +177,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <span class="result-office">${slot.officeName}</span>
                     <span class="result-time">${slot.localStart} (${slot.distanceMiles?.toFixed(1)}mi)</span>
                 </div>
-                <a href="${slot.bookingUrl}" target="_blank" class="book-link">Book</a>
+                <a href="${mainBookingUrl}" target="_blank" class="book-link" title="Book at ${slot.officeName}">Book</a>
             </div>
         `).join('');
     }

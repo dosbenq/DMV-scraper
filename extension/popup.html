@@ -40,12 +40,15 @@
 
                 <div class="tab-content active" id="tab-location">
                     <div class="input-group">
-                        <label for="zip-code">Location</label>
-                        <div class="row">
-                            <input type="text" id="zip-code" placeholder="Zip Code" maxlength="5">
-                            <button id="use-location" class="secondary-btn" title="Use Current Location">📍</button>
+                        <label>Search Location</label>
+                        <div class="location-toggle-group">
+                            <input type="text" id="zip-code" placeholder="Enter Zip Code" maxlength="5">
+                            <span class="or-divider">OR</span>
+                            <button id="use-location" class="location-btn" title="Use My Current Location">
+                                📍 <span class="btn-text">Use GPS</span>
+                            </button>
                         </div>
-                        <div id="location-display" class="debug-note"></div>
+                        <div id="location-display" class="location-status"></div>
                     </div>
                     <div class="input-group">
                         <label for="radius">Radius (miles)</label>

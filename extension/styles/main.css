@@ -252,26 +252,53 @@ footer {
     color: var(--error);
 }
 
-.secondary-btn {
-    background: rgba(255, 255, 255, 0.05);
+.location-toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
     border: 1px solid var(--glass-border);
-    color: var(--text-main);
-    padding: 8px 12px;
     border-radius: 8px;
+    padding: 4px;
+}
+
+.location-toggle-group input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 8px;
+}
+
+.or-divider {
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    font-weight: 700;
+}
+
+.location-btn {
+    background: rgba(251, 146, 60, 0.1);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 6px 12px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
     transition: all 0.2s;
 }
 
-.secondary-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+.location-btn:hover {
+    background: rgba(251, 146, 60, 0.2);
 }
 
-.debug-note {
+.location-status {
     font-size: 0.65rem;
     color: var(--text-dim);
-    margin-top: 4px;
+    margin-top: 6px;
     font-style: italic;
+    min-height: 14px;
 }
 
 select {
@@ -299,15 +326,20 @@ select {
     font-size: 0.9rem;
     margin-bottom: 12px;
     color: var(--text-main);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .results-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 200px;
+    max-height: 220px;
     overflow-y: auto;
-    padding-right: 4px;
+    padding: 4px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.1);
 }
 
 .results-list::-webkit-scrollbar {
