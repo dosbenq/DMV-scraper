@@ -24,9 +24,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 async function startMonitoring() {
+    const { pollInterval } = await chrome.storage.local.get('pollInterval');
+    const intervalMins = pollInterval ? parseInt(pollInterval) : POLL_INTERVAL_MINS;
+    
     await chrome.alarms.create(ALARM_NAME, {
-        periodInMinutes: POLL_INTERVAL_MINS,
-        delayInMinutes: 0.1 // Start almost immediately
+        periodInMinutes: intervalMins,
+        delayInMinutes: 0.1 
     });
     // Run once immediately
     await executeScrape();
@@ -54,7 +57,10 @@ async function executeScrape() {
     try {
         const results = await runner.runOnce(watcher, policy);
         console.log("Scrape complete:", results);
-        await chrome.storage.local.set({ lastRunAt: new Date().toISOString() });
+        await chrome.storage.local.set({ 
+            lastRunAt: new Date().toISOString(),
+            latestRunResults: results // Save full results (slots) for the popup to render
+        });
     } catch (err) {
         console.error("Scrape failed:", err);
     }

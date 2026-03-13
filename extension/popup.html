@@ -40,8 +40,12 @@
 
                 <div class="tab-content active" id="tab-location">
                     <div class="input-group">
-                        <label for="zip-code">Zip Code</label>
-                        <input type="text" id="zip-code" placeholder="e.g. 27705" maxlength="5">
+                        <label for="zip-code">Location</label>
+                        <div class="row">
+                            <input type="text" id="zip-code" placeholder="Zip Code" maxlength="5">
+                            <button id="use-location" class="secondary-btn" title="Use Current Location">📍</button>
+                        </div>
+                        <div id="location-display" class="debug-note"></div>
                     </div>
                     <div class="input-group">
                         <label for="radius">Radius (miles)</label>
@@ -61,16 +65,14 @@
                         </div>
                     </div>
                     <div class="input-group">
-                        <label>Days of Week</label>
-                        <div class="days-chips" id="days-picker">
-                            <button class="chip active" data-day="1">M</button>
-                            <button class="chip active" data-day="2">T</button>
-                            <button class="chip active" data-day="3">W</button>
-                            <button class="chip active" data-day="4">T</button>
-                            <button class="chip active" data-day="5">F</button>
-                            <button class="chip" data-day="6">S</button>
-                            <button class="chip" data-day="7">S</button>
-                        </div>
+                      <label for="poll-interval">Poll Interval</label>
+                      <select id="poll-interval">
+                          <option value="5">Every 5 minutes</option>
+                          <option value="10" selected>Every 10 minutes</option>
+                          <option value="15">Every 15 minutes</option>
+                          <option value="30">Every 30 minutes</option>
+                          <option value="60">Every hour</option>
+                      </select>
                     </div>
                 </div>
 
@@ -83,6 +85,13 @@
                         <label for="group-gaps">Time Gaps (mins, comma sep)</label>
                         <input type="text" id="group-gaps" value="30, 45" placeholder="e.g. 30, 45">
                     </div>
+                </div>
+            </section>
+
+            <section class="results-area">
+                <h3>Found Slots</h3>
+                <div id="results-list" class="results-list">
+                    <div class="empty-state">No slots found yet.</div>
                 </div>
             </section>
         </main>

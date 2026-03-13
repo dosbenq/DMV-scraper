@@ -151,7 +151,8 @@ export class ExtensionRunner {
       matchedCount: matched.length,
       sequenceCount: sequences.length,
       freshSlots: freshSlots.length,
-      freshSequences: freshSequences.length
+      freshSequences: freshSequences.length,
+      slots: matched
     };
   }
 }

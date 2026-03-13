@@ -6,7 +6,8 @@
   "permissions": [
     "alarms",
     "notifications",
-    "storage"
+    "storage",
+    "geolocation"
   ],
   "host_permissions": [
     "https://skiptheline.ncdot.gov/*"
