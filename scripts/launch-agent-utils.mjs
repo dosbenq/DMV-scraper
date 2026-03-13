@@ -3,7 +3,14 @@ import path from "node:path";
 
 export const DEFAULT_LABEL = "com.nc-dmv-appointment-monitor";
 
+export function validateLabel(label) {
+  if (!/^[a-zA-Z0-9.-]+$/.test(label)) {
+    throw new Error(`Invalid label: ${label}. Only alphanumeric characters, dots, and hyphens are allowed.`);
+  }
+}
+
 export function getLaunchAgentPaths({ repoDir, configPath, label = DEFAULT_LABEL }) {
+  validateLabel(label);
   const launchAgentsDir = path.join(os.homedir(), "Library", "LaunchAgents");
   const logsDir = path.resolve(repoDir, "logs");
   const plistPath = path.join(launchAgentsDir, `${label}.plist`);
