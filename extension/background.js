@@ -20,13 +20,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         startMonitoring();
     } else if (message.action === 'stop') {
         stopMonitoring();
+    } else if (message.action === 'test-notify') {
+        chrome.notifications.create('test-notif', {
+            type: "basic",
+            iconUrl: "icons/icon128.png",
+            title: "Notification Test",
+            message: "If you see this, notifications are working!",
+            priority: 2
+        });
     }
 });
 
 async function startMonitoring() {
+    console.log("Starting monitor...");
     const { pollInterval } = await chrome.storage.local.get('pollInterval');
     const intervalMins = pollInterval ? parseInt(pollInterval) : POLL_INTERVAL_MINS;
     
+    console.log(`Setting alarm ${ALARM_NAME} for ${intervalMins} mins`);
     await chrome.alarms.create(ALARM_NAME, {
         periodInMinutes: intervalMins,
         delayInMinutes: 0.1 
@@ -36,17 +46,21 @@ async function startMonitoring() {
 }
 
 function stopMonitoring() {
+    console.log("Stopping monitor...");
     chrome.alarms.clear(ALARM_NAME);
 }
 
 async function executeScrape() {
+    console.log("Executing scrape...");
     const { watcher, policy, isMonitoring } = await chrome.storage.local.get(['watcher', 'policy', 'isMonitoring']);
     
     if (!isMonitoring) {
+        console.log("Monitoring is disabled, skipping scrape.");
         stopMonitoring();
         return;
     }
 
+    console.log("Provider initializing...");
     const provider = new NcDmvProvider({
         baseUrl: "https://skiptheline.ncdot.gov",
         journeyPath: "/Webapp/Appointment/Index/a7ade79b-996d-4971-8766-97feb75254de"
@@ -56,12 +70,12 @@ async function executeScrape() {
     
     try {
         const results = await runner.runOnce(watcher, policy);
-        console.log("Scrape complete:", results);
+        console.log("Scrape complete results:", results);
         await chrome.storage.local.set({ 
             lastRunAt: new Date().toISOString(),
-            latestRunResults: results // Save full results (slots) for the popup to render
+            latestRunResults: results 
         });
     } catch (err) {
-        console.error("Scrape failed:", err);
+        console.error("Scrape failed error:", err);
     }
 }

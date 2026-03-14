@@ -182,6 +182,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         `).join('');
     }
 
+    document.getElementById('test-notify').addEventListener('click', () => {
+        chrome.runtime.sendMessage({ action: 'test-notify' });
+    });
+
     function updateStatusUI(isActive) {
         statusBadge.textContent = isActive ? 'Monitoring' : 'Idle';
         statusBadge.classList.toggle('active', isActive);

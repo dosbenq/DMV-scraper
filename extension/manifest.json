@@ -10,7 +10,7 @@
     "geolocation"
   ],
   "host_permissions": [
-    "https://skiptheline.ncdot.gov/*"
+    "*://skiptheline.ncdot.gov/*"
   ],
   "background": {
     "service_worker": "background.js",
