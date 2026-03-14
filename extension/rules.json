@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "origin", "operation": "remove" }
+      ]
+    },
+    "condition": {
+      "urlFilter": "skiptheline.ncdot.gov",
+      "resourceTypes": ["xmlhttprequest"]
+    }
+  },
+  {
+    "id": 2,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "referer", "operation": "set", "value": "https://skiptheline.ncdot.gov/" }
+      ]
+    },
+    "condition": {
+      "urlFilter": "skiptheline.ncdot.gov",
+      "resourceTypes": ["xmlhttprequest"]
+    }
+  }
+]
