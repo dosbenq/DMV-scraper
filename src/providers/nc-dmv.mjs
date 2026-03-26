@@ -135,15 +135,6 @@ function controlValueFieldPrefix(control) {
   return `StepControls[${control.controlIndex}].Model.Value`;
 }
 
-function serviceMatchesWatcher(service, watcher) {
-  if (watcher.serviceName && normalize(service.label) === normalize(watcher.serviceName)) {
-    return true;
-  }
-
-  const keywords = watcher.serviceKeywords ?? [];
-  return keywords.length === 0 || keywords.every((keyword) => includesNormalized(service.label, keyword));
-}
-
 function pickService(services, watcher) {
   if (watcher.serviceName) {
     const exact = services.find((service) => normalize(service.label) === normalize(watcher.serviceName));
